@@ -1,0 +1,30 @@
+const express = require('express')
+const bodyParser = require('body-parser')
+const routeProducts = require('./src/route/products')
+const routePayment = require('./src/route/payment')
+const routeHistory = require('./src/route/history')
+const userRoute = require('./src/route/users')
+const routeCategory = require('./src/route/category')
+const routeDelivery = require('./src/route/delivery')
+const routeProductSize = require('./src/route/product_size')
+
+const app = express()
+const cors = require('cors')
+const morgan = require('morgan')
+app.use(cors({ origin: true }));
+app.use(morgan('dev'))
+app.use(bodyParser.urlencoded({ extended: false }))
+app.use(bodyParser.json())
+app.use(routeProducts)
+app.use(routePayment)
+app.use(routeHistory)
+app.use(userRoute)
+app.use(routeCategory)
+app.use(routeDelivery)
+app.use(routeProductSize)
+// open route for public image
+app.use('/images', express.static('./public/images'))
+
+app.listen(process.env.port, () => {
+    console.log(`Server running on PORT ${process.env.port}`)
+})
