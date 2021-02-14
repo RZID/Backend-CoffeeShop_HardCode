@@ -4,11 +4,12 @@ const {
     modelDetailHistory,
     modelInsertHistory,
     modelPatchHistory,
-    modelDeleteHistory
+    modelDeleteHistory,
+    modelGetHistory,
+    modelCountId
 } = require('../model/history')
 
 const { success, failed, notFound } = require('../helper/response')
-const { response } = require('express')
 
 module.exports = {
     getAllHistory: async (req, res) => {
@@ -137,5 +138,27 @@ module.exports = {
         } catch (error) {
             failed(res, 'Internal server error', error)
         }
+    },
+    getHistory: async (req, res) => {
+        const limit = req.query.limit ? req.query.limit : 12
+        const page = req.query.page ? req.query.page : 1
+        const offset = page === 1 ? 0 : (page - 1) * limit
+        const responseTotal = await modelCountId(req.params.id)
+        modelGetHistory(limit, offset, req.params.id).then((response) => {
+            const data = response
+            const pagination = {
+                page: page,
+                limit: limit,
+                totalData: responseTotal[0].total,
+                totalPage: Math.ceil(responseTotal[0].total / limit)
+            }
+            if (response.length > 0) {
+                success(res, data, pagination, 'Get history success')
+            } else {
+                notFound(res, "Data unavailable", data)
+            }
+        }).catch((err) => {
+            failed(res, 'Internal server error', err.message)
+        })
     }
 }

@@ -1,13 +1,43 @@
 const connection = require('../config/mysql')
 
 module.exports = {
-    modelAllHistory: (searchParams, search, param, sort, offset, limit) => {
+    modelGetHistory: (offset, limit, id) => {
         return new Promise((resolve, reject) => {
             connection.query(`SELECT history.id AS id, productName as name, price, image, qty, delivery_detail , status, UNIX_TIMESTAMP(history.created_at) AS time
+        FROM history
+        LEFT JOIN products ON history.id_product = products.id
+        WHERE  id_user = ${id}
+        LIMIT ${offset}, ${limit}
+        `, (err, result) => {
+                if (err) {
+                    reject(new Error(err))
+                } else {
+                    resolve(result)
+                }
+            })
+        })
+    },
+    modelTotalHistory: (searchParams, search) => {
+        return new Promise((resolve, reject) => {
+            connection.query(`SELECT history.id AS id, productName as name, price, image, qty, delivery_detail , status, UNIX_TIMESTAMP(history.created_at) AS time
+        FROM history
+        LEFT JOIN products ON history.id_product = products.id
+        WHERE  id_user = ${id}
+        LIMIT ${offset}, ${limit}
+        `, (err, result) => {
+                if (err) {
+                    reject(new Error(err))
+                } else {
+                    resolve(result)
+                }
+            })
+        })
+    },
+    modelCountId: (id) => {
+        return new Promise((resolve, reject) => {
+            connection.query(`SELECT COUNT(*) as total
             FROM history
-            LEFT JOIN products ON history.id_product = products.id
-            WHERE ${searchParams} LIKE '%${search}%' ORDER BY ${param} ${sort}
-            LIMIT ${offset}, ${limit}
+            WHERE  id_user = ${id}'
             `, (err, result) => {
                 if (err) {
                     reject(new Error(err))
