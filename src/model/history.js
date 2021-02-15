@@ -1,14 +1,12 @@
 const connection = require('../config/mysql')
 
 module.exports = {
-    modelGetHistory: (offset, limit, id) => {
+    modelGetHistory: (id) => {
         return new Promise((resolve, reject) => {
             connection.query(`SELECT history.id AS id, productName as name, price, image, qty, delivery_detail , status, UNIX_TIMESTAMP(history.created_at) AS time
         FROM history
         LEFT JOIN products ON history.id_product = products.id
-        WHERE  id_user = ${id}
-        LIMIT ${offset}, ${limit}
-        `, (err, result) => {
+        WHERE  id_user = ${id}`, (err, result) => {
                 if (err) {
                     reject(new Error(err))
                 } else {
@@ -37,7 +35,7 @@ module.exports = {
         return new Promise((resolve, reject) => {
             connection.query(`SELECT COUNT(*) as total
             FROM history
-            WHERE  id_user = ${id}'
+            WHERE  id_user = '${id}'
             `, (err, result) => {
                 if (err) {
                     reject(new Error(err))

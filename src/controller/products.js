@@ -24,7 +24,10 @@ module.exports = {
     },
     getAllProducts: async (req, res) => {
         try {
-            const searchParams = req.query.searchParams ? req.query.searchParams : 'productName'
+            let searchParams = req.query.searchParams ? req.query.searchParams : 'productName'
+            if (searchParams === 'id_category') {
+                searchParams = 'products.productCategory'
+            }
             const search = req.query.search ? req.query.search : ''
             const param = req.query.param ? req.query.param : 'id'
             const sort = req.query.sort ? req.query.sort : 'ASC'
@@ -48,10 +51,10 @@ module.exports = {
                     notFound(res, "Data unavailable", data)
                 }
             }).catch((err) => {
-                failed(res, 'Internal server error', err)
+                failed(res, 'Internal server error', err.message)
             })
         } catch (error) {
-            failed(res, 'Internal server error', error)
+            failed(res, 'Internal server error', error.message)
         }
     },
     getDetailProduct: (req, res) => {

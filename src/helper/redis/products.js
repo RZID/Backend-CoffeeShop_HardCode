@@ -5,10 +5,10 @@ const { success, failed, notFound } = require('../response')
 module.exports = {
     getAllProductsRedis: (req, res, next) => {
         client.get('redisProducts', (err, result) => {
-            if(err){
+            if (err) {
                 failed(res, 'Internal server error', [])
-            }else{
-                if(result){
+            } else {
+                if (result) {
                     const response = JSON.parse(result)
                     const searchParams = req.query.searchParams ? req.query.searchParams : 'name'
                     const search = req.query.search ? req.query.search : ''
@@ -16,13 +16,13 @@ module.exports = {
                     const sort = req.query.sort ? req.query.sort : 'asc'
                     const limit = req.query.limit ? Number(req.query.limit) : 12
                     const page = req.query.page ? Number(req.query.page) : 1
-                    const offset = page===1 ? 0 : (page-1)*limit
+                    const offset = page === 1 ? 0 : (page - 1) * limit
                     const filterData = _.filter(response, (item) => {
                         return item[searchParams].toString().toLowerCase().includes(search.toString().toLowerCase())
                     })
-                    if(filterData.length >= 1){
+                    if (filterData.length >= 1) {
                         const sortData = _.orderBy(filterData, param, sort)
-                        const paginationData = _.slice(sortData, offset, offset+limit)
+                        const paginationData = _.slice(sortData, offset, offset + limit)
                         const pagination = {
                             page: page,
                             limit: limit,
@@ -30,10 +30,10 @@ module.exports = {
                             totalPage: Math.ceil(filterData.length / limit)
                         }
                         success(res, paginationData, pagination, 'Get all products from redis success')
-                    }else{
-                        notFound(res,"Data unavailable", {})
+                    } else {
+                        notFound(res, "Data unavailable", {})
                     }
-                }else{
+                } else {
                     next()
                 }
             }

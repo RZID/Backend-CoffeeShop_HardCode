@@ -13,13 +13,13 @@ const multerStorage = multer.diskStorage({
 
 const upload = multer({
     storage: multerStorage,
-    limits: {fieldSize: 1 * 1000000 },
-    fileFilter: (req, file, cb)=>{
+    limits: { fieldSize: 8 * 1024 * 1024 },
+    fileFilter: (req, file, cb) => {
         const ext = (/\.(gif|jpe?g|png)$/i).test(`${Date.now()}${path.extname(file.originalname)}`);
         if (ext) {
             cb(null, true)
         } else {
-            cb({code: 'Wrong image extension'}, false)
+            cb({ code: 'Wrong image extension' }, false)
         }
     }
 });
@@ -27,12 +27,12 @@ const upload = multer({
 const singleUpload = (req, res, next) => {
     const single = upload.single('image');
     single(req, res, (err) => {
-        if (err){
+        if (err) {
             failed(res, 'Upload Failed', err)
-        }else {
+        } else {
             next();
         }
     })
-} 
+}
 
 module.exports = singleUpload

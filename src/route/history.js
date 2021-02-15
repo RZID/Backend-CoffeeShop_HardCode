@@ -16,7 +16,7 @@ routeHistory
     .get('/api/detailHistory/:id', authentication, getDetailHistory)              // admin & user
     .post('/api/history', authentication, insertHistory)             // user & admin
     .patch('/api/history/:id', authentication, adminAuthorization, patchHistory)                // patch admin
-    .delete('/api/history/:id', authentication, userAuthorization, deleteHistory)                     // user
+    .delete('/api/history/:id', authentication, deleteHistory)                     // user
 
 
 module.exports = routeHistory
