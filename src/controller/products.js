@@ -149,8 +149,10 @@ module.exports = {
             const detail = await modelDetailProduct(id)
             if (req.file) {
                 data.image = req.file.filename
-                const path = `./public/images/${detail[0].image}`
-                fs.unlinkSync(path)
+                const path = `${process.cwd()}/public/images/${detail[0].image}`
+                if (fs.existsSync(path)) {
+                    fs.unlinkSync(path)
+                }
             }
             modelUpdateProductPatch(data, id)
                 .then((response) => {
@@ -160,7 +162,7 @@ module.exports = {
                     failed(res, 'Internal server error', [])
                 })
         } catch (error) {
-            failed(res, 'Internal server error', [])
+            failed(res, 'Internal server error', error)
         }
     },
     deleteProduct: async (req, res) => {
