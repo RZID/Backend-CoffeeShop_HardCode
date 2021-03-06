@@ -1,4 +1,4 @@
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const fs = require('fs');
 const mailer = require('../helper/mailer')
@@ -98,52 +98,45 @@ module.exports = {
     //update User
     updateUser: async (req, res) => {
         try {
-            const body = req.body;
+            const data = req.body;
             const id = req.params.id
             const detail = await modelDetail(id)
-            // const data = {...body, image: req.file.filename};
             if (req.file) {
-                const data = { ...body, image: req.file.filename };
                 if (detail[0].image === 'default_photo.png') {
+                    data.image = req.file.filename
                     modelUpdate(data, id)
                         .then((response) => {
                             success(res, response, {}, 'Update User success')
                         }).catch((err) => {
                             failed(res, 'All textfield is required!', err)
+                            // console.log(err)
                         })
                 } else {
+                    data.image = req.file.filename
                     const path = `./public/images/${detail[0].image}`
-                    fs.unlinkSync(path)
+                    if (fs.existsSync(path)) {
+                        fs.unlinkSync(path)
+                    }
                     modelUpdate(data, id)
                         .then((response) => {
                             success(res, response, {}, 'Update User success')
-                        }).catch(() => {
+                        }).catch((err) => {
                             failed(res, 'Can\'t connect to database', [])
+                            // console.log(err)
                         })
                 }
             } else {
-                const data = { ...body, image: 'default_photo.png' };
-                if (detail[0].image === 'default_photo.png') {
-                    modelUpdate(data, id)
-                        .then((response) => {
-                            success(res, response, {}, 'Update User success')
-                        }).catch((err) => {
-                            console.log(body)
-                            failed(res, 'All textfield is required!', err)
-                        })
-                } else {
-                    const path = `./public/images/${detail[0].image}`
-                    fs.unlinkSync(path)
-                    modelUpdate(data, id)
-                        .then((response) => {
-                            success(res, response, {}, 'Update User success')
-                        }).catch(() => {
-                            failed(res, 'Can\'t connect to database', [])
-                        })
-                }
+                modelUpdate(data, id)
+                .then((response) => {
+                    success(res, response, {}, 'Update User success')
+                }).catch((err) => {
+                    failed(res, 'All textfield is required!', err)
+                    // console.log(err)
+                })
             }
         } catch (error) {
             failed(res, 'Error server', error)
+            // console.log(error)
         }
     },
     //get Detail User
@@ -196,7 +189,7 @@ module.exports = {
         try {
             mdDeletePhoto(req.params.id).then(() => {
                 modelDetail(req.params.id).then(result => {
-                    if (result[0].image != 'default_photo.png') {
+                    if (result[0].image !== 'default_photo.png') {
                         const path = `./public/images/${result[0].image}`
                         fs.unlinkSync(path)
                     }
