@@ -98,7 +98,8 @@ module.exports = {
     //update User
     updateUser: async (req, res) => {
         try {
-            const body = req.body;
+            const body = req.body
+            console.log(req.body.birthdate)
             const id = req.params.id
             const detail = await modelDetail(id)
             // const data = {...body, image: req.file.filename};
